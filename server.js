@@ -66,7 +66,14 @@ wss.on('connection', function connection(ws, req) {
 
 	ws.on('close', function close() {
 	  console.log('disconnected');
-	  removeFromArray(connections,ws)
+
+	  	const index = connections.indexOf(ws);
+
+	  	if (index > -1) {
+    		connections.splice(index, 1);
+    		user_ids.splice(index,1)
+		}
+
 	});
 	
 	ws.on('error', function error() {
