@@ -21,7 +21,6 @@ app.post('/addPoint',function (req, res) {
 	let tstamp = req.body.timestamp;
 
 	console.log("Add point called")
-	console.log("Index " + user_index)
 	console.log(user_ids)
 	console.log(user)
 	for (i = 0; i<user_ids.length; i++)
