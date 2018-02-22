@@ -1,0 +1,44 @@
+
+iPhone to Backend:
+
+/AddPoint- Adds a point that was added while app in foreground
+Send:
+{
+	user:X
+	sensor1:X
+	sensor2:X
+	timestamp:MM-DD-YYYY/HH:MM:SS
+}
+
+/AddPoints- Adds points that taken while in background
+Send:
+{
+	user:X
+	points:[{
+		sensor1:X
+		sensor2:X
+		timestamp:MM-DD-YYYY/HH:MM:SS
+	}]
+}
+
+
+Backend to Web
+/GetPoints
+Send
+{
+	UserID:X
+	time:hrs
+}
+
+///Websockets
+Startup:
+Send
+"{message_type:"set_id", user: XX}"
+
+
+Recieve:
+{
+	sensor1:X
+	sensor2:X
+	timestamp:MM-DD-YYYY/HH:MM:SS
+}
