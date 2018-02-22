@@ -20,17 +20,19 @@ app.post('/addPoint',function (req, res) {
 	let s2 = req.body.sensor2;
 	let tstamp = req.body.timestamp;
 
-	let user_index = user_ids.indexOf(user)
 	console.log("Add point called")
 	console.log("Index " + user_index)
 	console.log(user_ids)
 	console.log(user)
-	if (user_index != -1)
+	for (i = 0; i<user_ids.length; i++)
 	{
-		let data = {sensor1:s1,sensor2:s2,timestamp:tstamp}
-		connections[user_index].send(JSON.stringify(data))
-		
+		if (user_ids[i] == user)
+		{
+			let data = {sensor1:s1,sensor2:s2,timestamp:tstamp}
+			connections[i].send(JSON.stringify(data))
+		}
 	}
+	
 
 
 	res.send({ msg: "cool beans" });
