@@ -2,7 +2,8 @@ const express = require('express');
 const http = require('http');
 const url = require('url');
 const WebSocket = require('ws');
- 
+const database = require('./database.js')
+
 const app = express();
 
 var bodyParser = require('body-parser');
@@ -13,12 +14,14 @@ var connections = []
 var user_ids = []
 
 
-app.post('/addPoint',function (req, res) {
+app.post('/add_point',function (req, res) {
 	console.log(req.body)
-	let user = req.body.user;
+	let user = req.body.user_id;
 	let s1 = req.body.sensor1;
 	let s2 = req.body.sensor2;
 	let tstamp = req.body.timestamp;
+
+	let date = new Date(tstamp[0],tstamp[1]-1,tstamp[2],tstamp[3],tstamp[4],tstamp[5])
 
 	console.log("Add point called")
 	console.log(user_ids)
@@ -31,24 +34,59 @@ app.post('/addPoint',function (req, res) {
 			connections[i].send(JSON.stringify(data))
 		}
 	}
-	
-
-
-	res.send({ msg: "cool beans" });
+	database.add_point(user,s1,s2,date,function(result){
+		res.send(result)
+	})
 });
 
+app.post('/sign_up',function (req, res) {
+	bluetooth_id = ""
+	if ("bluetooth_id" in req.body){
+		bluetooth_id = req.body.bluetooth_id;
+	}
+	database.add_user(req.body.e_mail, req.body.password, req.body.f_name, req.body.l_name, req.body.user_type, bluetooth_id, function(result){
+		res.send(result)
+	})
+	
+});
+
+app.post('/login',function (req, res) {
+	database.sign_in(req.body.e_mail, req.body.password, function(result){
+		res.send(result)
+	})
+	
+});
+
+app.post('/get_all_points',function (req, res) {
+	database.get_all_points(req.body.user_id, function(result){
+		res.send(result)
+	})
+	
+});
+
+app.post('/get_points_hours',function (req, res) {
+	database.get_last_hours(req.body.user_id, req.body.hours, function(result){
+		res.send(result)
+	})
+	
+});
+app.post('/get_points_days',function (req, res) {
+	database.get_last_hours(req.body.user_id, req.body.days, function(result){
+		res.send(result)
+	})
+	
+});
  
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', function connection(ws, req) {
-	const location = url.parse(req.url, true);
-  // You might use location.query.access_token to authenticate or share sessions
-  // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
- 
- 	console.log("hi")
+	const location = url.parse(req.url, true); 
+
+	//Store new connection and set user_id
  	connections.push(ws)
  	user_ids.push("-1")
+
 	ws.on('message', function incoming(message) {
 		console.log("received")
 		let the_json = JSON.parse(message)
@@ -59,12 +97,6 @@ wss.on('connection', function connection(ws, req) {
 			user_ids[index] = the_json.user
 		}
 	});
-
-	/*ws.on('open', function open() {
-		console.log('connected');
-		ws.send(Date.now());
-	});*/
-
 	ws.on('close', function close() {
 	  console.log('disconnected');
 
@@ -76,14 +108,10 @@ wss.on('connection', function connection(ws, req) {
 		}
 
 	});
-	
 	ws.on('error', function error() {
 	  console.log('error');
 	});
-
- 
-  	//ws.send('something');
-});
+ });
 
 
 function removeFromArray(arr, elm){
