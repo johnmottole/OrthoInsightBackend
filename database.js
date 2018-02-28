@@ -28,7 +28,7 @@ module.exports.add_user = function (e_mail, password, f_name, l_name, user_type,
 			dbo.collection("users").insertOne(user, function(err, res) {
 			    if (err) throw err;
 			    db.close();
-			    callback({msg:"success", id:res.ops[0]._id})
+			    callback({msg:"success", user_id:res.ops[0]._id})
 			});
 	    }
 	    else
@@ -54,17 +54,25 @@ module.exports.sign_in = function (e_mail, password, callback)
 	  	
 	    if (err) throw err;
 
-		let real_salt = result.salt 
-		let real_hash = result.hash
+	    if (!result)
+	    {
+	    	callback({msg:"failure", error:"User does not exist"})
+	    }else
+	    {
+	    	let real_salt = result.salt 
+			let real_hash = result.hash
 
-		var test_hash = crypto.pbkdf2Sync(password, real_salt, 1000, 64, 'sha512').toString('hex');
-		db.close();
-  		if (real_hash === test_hash)
-  		{
-  			callback({msg:"success", id:result._id})
-  		}else{
-  			callback({msg:"failure", error:"Incorrect password"})
-  		}
+			var test_hash = crypto.pbkdf2Sync(password, real_salt, 1000, 64, 'sha512').toString('hex');
+			db.close();
+	  		if (real_hash === test_hash)
+	  		{
+	  			callback({msg:"success", user_id:result._id})
+	  		}else{
+	  			callback({msg:"failure", error:"Incorrect password"})
+	  		}
+	    }
+
+		
 
 	  });
 	})
