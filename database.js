@@ -119,6 +119,7 @@ module.exports.get_last_hours = function(id,hours,callback)
 	  var dbo = db.db("heroku_l59s96ps");
 	  database = dbo
 	  current_time = new Date()
+	  current_time.setHours(current_time.getHours()-5)
 	  prev_time = new Date()
 	  prev_time.setHours(current_time.getHours() - parseInt(hours));
 	  query = {user_id: id, timestamp: {$gte:prev_time,$lt: current_time}}
