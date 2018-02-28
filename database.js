@@ -136,6 +136,7 @@ module.exports.get_last_days = function(id,days,callback)
 	  var dbo = db.db("heroku_l59s96ps");
 	  database = dbo
 	  current_time = new Date()
+	  current_time.setHours(current_time.getHours()-5)
 	  prev_time = new Date()
 	  prev_time.setDay(current_time.getDate() - parseInt(days));
 	  query = {user_id: id, timestamp: {$gte:prev_time,$lt: current_time}}
