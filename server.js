@@ -40,7 +40,7 @@ app.post('/add_point',function (req, res) {
 });
 
 app.post('/sign_up',function (req, res) {
-	bluetooth_id = ""
+	bluetooth_id = "b"
 	if ("bluetooth_id" in req.body){
 		bluetooth_id = req.body.bluetooth_id;
 	}
@@ -71,7 +71,7 @@ app.post('/get_points_hours',function (req, res) {
 	
 });
 app.post('/get_points_days',function (req, res) {
-	database.get_last_hours(req.body.user_id, req.body.days, function(result){
+	database.get_last_days(req.body.user_id, req.body.days, function(result){
 		res.send(result)
 	})
 	

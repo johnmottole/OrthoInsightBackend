@@ -120,8 +120,11 @@ module.exports.get_last_hours = function(id,hours,callback)
 	  database = dbo
 	  current_time = new Date()
 	  current_time.setHours(current_time.getHours()-5)
-	  prev_time = new Date()
-	  prev_time.setHours(current_time.getHours() - parseInt(hours));
+	  prev_time = new Date(current_time.getTime())
+	  prev_time.setHours(prev_time.getHours() - parseInt(hours));
+	  console.log("Times")
+	  console.log(current_time)
+	  console.log(prev_time)
 	  query = {user_id: id, timestamp: {$gte:prev_time,$lt: current_time}}
 	  dbo.collection("points").find(query).toArray(function(err, result) {
 	  	callback(result)
@@ -137,9 +140,12 @@ module.exports.get_last_days = function(id,days,callback)
 	  database = dbo
 	  current_time = new Date()
 	  current_time.setHours(current_time.getHours()-5)
-	  prev_time = new Date()
-	  prev_time.setDay(current_time.getDate() - parseInt(days));
+	  prev_time = new Date(current_time.getTime())
+	  prev_time.setDate(prev_time.getDate() - parseInt(days));
 	  query = {user_id: id, timestamp: {$gte:prev_time,$lt: current_time}}
+	  console.log("Times")
+	  console.log(current_time)
+	  console.log(prev_time)
 	  dbo.collection("points").find(query).toArray(function(err, result) {
 	  	callback(result)
 	  })
