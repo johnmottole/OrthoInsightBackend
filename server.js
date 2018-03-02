@@ -76,6 +76,33 @@ app.post('/get_points_days',function (req, res) {
 	})
 	
 });
+
+app.post('/create_relationship',function (req, res) {
+	database.create_relationship(req.body.patient_id, req.body.doctor_id, function(result){
+		res.send(result)
+	})
+	
+});
+
+app.post('/get_doctors',function (req, res) {
+	database.get_docs(req.body.patient_id, function(result){
+		res.send(result)
+	})
+	
+});
+
+app.post('/get_patients',function (req, res) {
+	database.get_patients(req.body.doctor_id, function(result){
+		res.send(result)
+	})
+});
+
+app.post('/get_patient_info',function (req, res) {
+	database.get_patient(req.body.patient_id, function(result){
+		res.send(result)
+	})
+});
+
  
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });

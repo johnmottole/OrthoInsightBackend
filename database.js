@@ -1,6 +1,7 @@
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://johnmottole:john123@ds147228.mlab.com:47228/heroku_l59s96ps";
 var crypto = require('crypto');
+var ObjectId = require('mongodb').ObjectID;
 
 
 module.exports.add_user = function (e_mail, password, f_name, l_name, user_type,bluetooth_id, callback)
@@ -150,4 +151,109 @@ module.exports.get_last_days = function(id,days,callback)
 	  	callback(result)
 	  })
 	})
+}
+
+module.exports.create_relationship = function(patient_id,doctor_id,callback)
+{
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+	  var dbo = db.db("heroku_l59s96ps");
+	  database = dbo
+	  relationship = {patient_id: patient_id, doctor_id:doctor_id}
+
+	    dbo.collection("relationships").find(relationship).toArray(function(err, result) {
+	  		if (result.length == 0)
+	  		{
+	  			dbo.collection("relationships").insertOne(relationship, function(err, res) {
+				    if (err) throw err;
+				    db.close();
+				    callback({msg:"success"})
+				});
+	  		}else
+	  		{
+	  			callback({msg:"already exists!"})
+	  		}
+	  	})
+	})
+}
+
+module.exports.get_docs = function (patient_id, callback)
+{
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+	  var dbo = db.db("heroku_l59s96ps");
+	  database = dbo
+
+	  var query = { patient_id: patient_id };
+	  dbo.collection("relationships").find(query).toArray(function(err, result) {
+	    if (err) throw err;
+	    if (result.length != 0)
+	    {
+		  	var ids = []
+		  	for (i = 0; i<result.length; i++)
+		  	{
+		  		ids.push(result[i].doctor_id)
+		  	}
+		  	callback({msg:"success", doctor_ids:ids})
+	    }
+	    else
+	    {
+	   		db.close();
+			callback({msg:"failure", error:"Patient does not have doctors"})
+		}
+	  });
+
+	});
+}
+
+module.exports.get_patients = function (doctor_id, callback)
+{
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+	  var dbo = db.db("heroku_l59s96ps");
+	  database = dbo
+
+	  var query = { doctor_id: doctor_id };
+
+	  dbo.collection("relationships").find(query).toArray(function(err, result) {
+	    if (err) throw err;
+
+	    if (result.length != 0)
+	    {
+		  	var ids = []
+		  	for (i = 0; i<result.length; i++)
+		  	{
+		  		ids.push(result[i].patient_id)
+		  	}
+		  	callback({msg:"success", patient_ids:ids})
+	    }
+	    else
+	    {
+	   		db.close();
+			callback({msg:"failure", error:"Doctor does not have patients"})
+		}
+	  });
+
+	});
+}
+
+module.exports.get_patient = function (patient_id, callback)
+{
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+	  var dbo = db.db("heroku_l59s96ps");
+	  database = dbo
+
+	  var query = {_id:ObjectId(patient_id)}
+	  	console.log(query)
+	  	dbo.collection("users").findOne(query,function(err, result) {
+		  	if(result){
+		  		callback({msg:"success", patient:result})
+		  	}else{
+		  		callback({msg:"failure"})
+		  	}
+	  	})
+	  
+
+	});
 }
