@@ -97,8 +97,8 @@ app.post('/get_patients',function (req, res) {
 	})
 });
 
-app.post('/get_patient_info',function (req, res) {
-	database.get_patient(req.body.patient_id, function(result){
+app.post('/get_user_info',function (req, res) {
+	database.get_user(req.body.user_id, function(result){
 		res.send(result)
 	})
 });

@@ -237,7 +237,7 @@ module.exports.get_patients = function (doctor_id, callback)
 	});
 }
 
-module.exports.get_patient = function (patient_id, callback)
+module.exports.get_user = function (patient_id, callback)
 {
 	MongoClient.connect(url, function(err, db) {
 	  if (err) throw err;
@@ -248,7 +248,7 @@ module.exports.get_patient = function (patient_id, callback)
 	  	console.log(query)
 	  	dbo.collection("users").findOne(query,function(err, result) {
 		  	if(result){
-		  		callback({msg:"success", patient:result})
+		  		callback({msg:"success", user:result})
 		  	}else{
 		  		callback({msg:"failure"})
 		  	}
