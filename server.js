@@ -18,9 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 var connections = []
 var user_ids = []
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/front_end_html/index.html'));
-});
 
 app.post('/add_point',function (req, res) {
 	console.log(req.body)
