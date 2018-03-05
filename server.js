@@ -3,8 +3,13 @@ const http = require('http');
 const url = require('url');
 const WebSocket = require('ws');
 const database = require('./database.js')
+var cors = require('cors')
 
 const app = express();
+app.use(cors())
+
+var path = require("path");
+
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
@@ -13,6 +18,9 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 var connections = []
 var user_ids = []
 
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/front_end_html/index.html'));
+});
 
 app.post('/add_point',function (req, res) {
 	console.log(req.body)
@@ -51,6 +59,7 @@ app.post('/sign_up',function (req, res) {
 });
 
 app.post('/login',function (req, res) {
+	console.log(req.body)
 	database.sign_in(req.body.e_mail, req.body.password, function(result){
 		res.send(result)
 	})
