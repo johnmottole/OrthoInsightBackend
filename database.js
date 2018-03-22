@@ -62,18 +62,33 @@ module.exports.sign_in = function (e_mail, password, callback)
 	    {
 	    	let real_salt = result.salt 
 			let real_hash = result.hash
-
+			let user_type = result.user_type
 			var test_hash = crypto.pbkdf2Sync(password, real_salt, 1000, 64, 'sha512').toString('hex');
-			db.close();
-	  		if (real_hash === test_hash)
+	  		if (real_hash === test_hash) //User gave correct credentials
 	  		{
-	  			callback({msg:"success", user_id:result._id})
+	  			if (user_type == "doctor") 
+	  			{
+	  				var pquery = {doctor_id: result._id.toString()};
+	  				dbo.collection("relationships").find(pquery).toArray(function(err, relationshipResult) {
+					    if (err) throw err;
+						var ids = []
+						for (i = 0; i<relationshipResult.length; i++)
+						{
+						 	ids.push(relationshipResult[i].patient_id)
+						}
+						db.close()
+						callback({msg:"success", user_id:result._id, patient_ids:ids})
+					})
+	  			}
+	  			else{
+	  				db.close()
+	  				callback({msg:"success", user_id:result._id})
+	  			}
 	  		}else{
+	  			db.close()
 	  			callback({msg:"failure", error:"Incorrect password"})
 	  		}
 	    }
-
-		
 
 	  });
 	})
@@ -214,7 +229,8 @@ module.exports.get_patients = function (doctor_id, callback)
 	  database = dbo
 
 	  var query = { doctor_id: doctor_id };
-
+	  console.log("get patient quert")
+	  console.log(query)
 	  dbo.collection("relationships").find(query).toArray(function(err, result) {
 	    if (err) throw err;
 
